@@ -36,6 +36,11 @@ public class Room {
         this.inventory = inventory;
     }
     //Hashtable<String, ArrayList<String>> connect, String room, ArrayList<String> connecting
+    public void connected(Room base, Room b) {
+        ArrayList<Room> connecting = new ArrayList<>();
+        connecting.add(b);
+        this.connect.put(base, connecting);
+    }
     public void connected(Room base, Room b, Room c) {
         ArrayList<Room> connecting = new ArrayList<>();
         connecting.add(b);
@@ -45,25 +50,25 @@ public class Room {
 
     public String connects() {
         if (name.contains("shea")) {
-            return "Buck Lab on your left and Gorin Lab on your right.";
+            return "Buck Lab and the Gorin Lab.";
         }
         if (name.contains("gorin")) {
-            return "Shea Lab on your left and Queeney Lab on your right.";
+            return "Shea Lab.";
         }
         if (name.contains("queeney")) {
-            return "Gorin Lab on your left.";
+            return "Strom Lab and the hallway.";
         }
         if (name.contains("buck")) {
-            return "Strom Lab on your left and Shea Lab on your right.";
+            return "Strom Lab and the Shea Lab.";
         }
         if (name.contains("strom")) {
-            return "Buck Lab on your right.";
+            return "Buck Lab and the Queeney Lab.";
         }
         if (name.contains("hallway")) {
-            return " Shea Lab in front of you and teaching labs behind you.";
+            return "Queeney Lab and the Teaching Lab.";
         }
         if (name.contains("teaching")) {
-            return " hallway in front of you.";
+            return "hallway.";
         }
         return "Error";
     }

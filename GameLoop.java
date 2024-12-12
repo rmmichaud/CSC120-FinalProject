@@ -2,28 +2,37 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.TimerTask;
+import java.util.Timer;
 
 public class GameLoop {
     Random rand = new Random();
     Scanner userInput = new Scanner(System.in);
     //String hoodStation;
     //String name;
+    ArrayList<String> canAdd = new ArrayList<>();
+    String location;
     String item;
     Room nLab;
     Integer nHood;
     String currentLocation;
     String responseOne;
     ArrayList<String> carrying = new ArrayList<>();
+    String[] runR;
+    //ArrayList<String> copyR;
+    //Chemistt chemist;
     String[] inventory = {
-        "graduated cyclinger", "beaker", "round bottom flask", "magnesium", "syringe", "magnesium powder",
-        "diethyl ether", "bromobenzene", "stirring rod", "benzophenone", "hydrochloric acid", "blah",
-        "I see.",
-        "It makes you think, doesn't it?",
-        "I've never thought about it like that.",
-        "Now that's a thought!",
-        "It's one of those things, you know?"
+        "graduated cyclinder", "beaker", "round bottom flask", "syringe", "magnesium powder",
+        "diethyl ether", "bromobenzene", "stirring rod", "benzophenone", "hydrochloric acid", "erlenmeyer flask",
+        "pipettes", "heating mantle", "oil bath", "separatory funnel", "balance", "stir bar", "reflux condenser", 
+        "triethylamine", "toluene", "sodium sulfite", "sulfuric acid", "methanol", "hexane", "ethyl acetate", "ammonium hydroxide", 
+        "acetone", "iodobenzene", "phenylacetylene", "palladium(iii) acetate", "copper(i) iodide", "stir plate", 
+        "cyclopentadiene", "maleic anhydride", "aluminum chloride", "magnesium sulfate", "calcium chloride", "pyridine", "isopropanol", 
+        "cyclohexanone", "phenanthrene", "cyclohexane", "benzyl alcohol", "volumetric flasks", "graduated cylinders", "watch glasses",
+        "thermometer", "sand bath", "buchner funnel", "filter paper", "nitrogen tubing"
       };
-    ArrayList<String> reaction;
+    ArrayList<String> measurables = new ArrayList<>();
+    ArrayList<String> reaction = new ArrayList<>();
     ArrayList<String> grignard = new ArrayList<>();
     ArrayList<String> sonogashira = new ArrayList<String>();
     ArrayList<String> dielsAlder = new ArrayList<String>();
@@ -37,103 +46,200 @@ public class GameLoop {
     Room teaching = new Room ("teaching", randInventory());
     Room baseRoom;
     Integer baseHood;
+    String baseLoc;
+    Timer timer = new Timer();
+    int counter = 5;
+    Boolean result = false;
+    ArrayList<String> copyR = new ArrayList<>();
+    String response = "";
+
+    public void start() {
+        // Thread for handling timer
+        TimerTask task = new TimerTask() {
+            public void run() {
+                if (counter > 0) {
+                    System.out.println(counter + " seconds remaining...");
+                    counter--;
+                } else {
+                    System.out.println("Time's up!");
+                    counter --;
+                    timer.cancel();
+                    checkResult();
+                }
+            }
+        };
+
+        // Schedule the timer
+        timer.scheduleAtFixedRate(task, 0, 1000);
+
+        // Thread for handling input
+        new Thread(() -> {
+            while (counter >= 0) {
+                if (userInput.hasNextLine() && counter == 0) {
+                    response = userInput.nextLine();
+                }
+                if (response.contains("stop reaction")) {
+                    result = false;
+                    timer.cancel();
+                    System.out.println("Reaction stopped!");
+                    break;
+                }
+            }
+        }).start();
+    }
+
+    public void checkResult() {
+        if (response.contains("1")) {
+            result = true;
+            System.out.println("Success: Result is true.");
+        } else {
+            System.out.println("Failure: Result is false.");
+        }
+    }
     
-    //public GameLoop() {
-    //} 
-    ArrayList<String> randInventory() {
+
+    ArrayList<String> randInventory(Boolean b) {
         ArrayList<String> randInventory = new ArrayList<>();
-        int randomInt = rand.nextInt(10) + 3;
+        for (int i = 0; i<inventory.length; i++) {
+            randInventory.add(inventory[i]);
+        }
+            
+        return randInventory;
+    }
+     
+   ArrayList<String> randInventory() {
+        ArrayList<String> randInventory = new ArrayList<>(); 
+        int randomInt = rand.nextInt(12) + 1;
         while (randInventory.size() < randomInt) {
-            int rand_int = rand.nextInt(10);
+            int rand_int = rand.nextInt(inventory.length);
             String finalItem = inventory[rand_int];
             randInventory.add(finalItem);
         }
         return randInventory;
+        
     }
+    
 
     void setUp () {
-        grignard.add(" ");
         grignard.add("round bottom flask");
         grignard.add("magnesium powder");
         grignard.add("hydrochloric acid");
         grignard.add("syringe");
         grignard.add("diethyl ether");
         grignard.add("bromobenzene");
-        grignard.add("stirring rod");
         grignard.add("benzophenone");
-        sonogashira.add("chemical1");
-        sonogashira.add("chemical2");
-        sonogashira.add("chemical3");
-        sonogashira.add("chemical1");
-        sonogashira.add("chemical2");
-        sonogashira.add("chemical3");
-        dielsAlder.add("chemical1");
-        dielsAlder.add("chemical1");
-        dielsAlder.add("chemical1");
-        dielsAlder.add("chemical1");
-        dielsAlder.add("chemical1");
-        dielsAlder.add("chemical1");
+
+        sonogashira.add("triethylamine");
+        sonogashira.add("toluene");
+        sonogashira.add("oil bath");
+        sonogashira.add("iodobenzene");
+        sonogashira.add("phenylacetylene");
+        sonogashira.add("palladium(iii) acetate");
+        sonogashira.add("copper(i) iodide");
+        sonogashira.add("stir plate");
+        sonogashira.add("stir bar");
+        sonogashira.add("syringe");
+        sonogashira.add("round bottom flask");
+        sonogashira.add("nitrogen tubing");
+
+        dielsAlder.add("cyclopentadiene");
+        dielsAlder.add("maleic anhydride");
+        dielsAlder.add("aluminum chloride");
+        dielsAlder.add("toluene");
+        dielsAlder.add("reflux condenser");
+        dielsAlder.add("oil bath");
+        dielsAlder.add("stir plate");
+        dielsAlder.add("stir bar");
+        dielsAlder.add("syringe");
+        dielsAlder.add("round bottom flask");
+
+        measurables.add("cyclopentadiene");
+        measurables.add("maleic anhydride");
+        measurables.add("aluminum chloride");
+        measurables.add("stir bar");
+        measurables.add("toluene");
+        measurables.add("copper(i) iodide");
+        measurables.add("palladium(iii) acetate");
+        measurables.add("iodobenzene");
+        measurables.add("phenylacetylene");  
+        measurables.add("triethylamine");
+        measurables.add("magnesium powder");
+        measurables.add("hydrochloric acid");
+        measurables.add("diethyl ether");
+        measurables.add("bromobenzene");
+        measurables.add("benzophenone");
+
+
         buck.connected(buck, shea, strom);
         shea.connected(shea, buck, gorin);
-        gorin.connected(gorin, shea, hallway);
-        hallway.connected(hallway, gorin, teaching);
+        gorin.connected(gorin, shea);
+        hallway.connected(hallway, queeney, teaching);
         teaching.connected(teaching, hallway, queeney);
         queeney.connected(queeney, hallway, strom);
         strom.connected(strom, queeney, buck);
-        hoods.put("shea 1", randInventory());
-        hoods.put("shea 2", randInventory());
-        hoods.put("shea 3", randInventory());
-        hoods.put("shea 4", randInventory());
-        hoods.put("gorin 1", randInventory());
-        hoods.put("gorin 2", randInventory());
-        hoods.put("gorin 3", randInventory());
-        hoods.put("gorin 4", randInventory());
-        hoods.put("strom 1", randInventory());
-        hoods.put("strom 2", randInventory());
-        hoods.put("strom 3", randInventory());
-        hoods.put("strom 4", randInventory());
-        hoods.put("queeney 1", randInventory());
-        hoods.put("queeney 2", randInventory());
-        hoods.put("queeney 3", randInventory());
-        hoods.put("queeney 4", randInventory());
-        hoods.put("buck 1", randInventory());
-        hoods.put("buck 2", randInventory());
-        hoods.put("buck 3", randInventory());
-        hoods.put("buck 4", randInventory());
-        hoods.put("teaching 1", randInventory());
-        hoods.put("teaching 2", randInventory());
-        hoods.put("teaching 3", randInventory());
-        hoods.put("teaching 4", randInventory());
+        hoods.put("shea 1", new ArrayList<>(randInventory()));
+        hoods.put("shea 2", new ArrayList<>(randInventory()));
+        hoods.put("shea 3", new ArrayList<>(randInventory()));
+        hoods.put("shea 4", new ArrayList<>(randInventory()));
+        hoods.put("gorin 1", new ArrayList<>(randInventory()));
+        hoods.put("gorin 2", new ArrayList<>(randInventory()));
+        hoods.put("gorin 3", new ArrayList<>(randInventory()));
+        hoods.put("gorin 4", new ArrayList<>(randInventory()));
+        hoods.put("strom 1", new ArrayList<>(randInventory()));
+        hoods.put("strom 2", new ArrayList<>(randInventory()));
+        hoods.put("strom 3", new ArrayList<>(randInventory()));
+        hoods.put("strom 4", new ArrayList<>(randInventory()));
+        hoods.put("queeney 1", new ArrayList<>(randInventory()));
+        hoods.put("queeney 2", new ArrayList<>(randInventory()));
+        hoods.put("queeney 3", new ArrayList<>(randInventory()));
+        hoods.put("queeney 4", new ArrayList<>(randInventory()));
+        hoods.put("buck 1", new ArrayList<>(randInventory()));
+        hoods.put("buck 2", new ArrayList<>(randInventory()));
+        hoods.put("buck 3", new ArrayList<>(randInventory()));
+        hoods.put("buck 4", new ArrayList<>(randInventory()));
+        hoods.put("teaching 1", new ArrayList<>(randInventory()));
+        hoods.put("teaching 2", new ArrayList<>(randInventory()));
+        hoods.put("teaching 3", new ArrayList<>(randInventory()));
+        hoods.put("teaching 4", new ArrayList<>(randInventory()));
         baseRoom = shea;
         baseHood = 1;
     }
 
-    void startLocation() {
-            System.out.println("Where would you like to set up your reaction? Lab options: Shea, Gorin, Buck, Strom, Queeney. [Default: Shea 1]");
+    String startLocation() {
+            System.out.println("Choose a lab and hood to set up your reaction. Lab options: Shea, Gorin, Buck, Strom, Queeney. Hood options: 1, 2, 3, 4.[Default: Shea 1]");
             String lab = userInput.nextLine().toLowerCase();
             baseRoom = checkLab(lab, this.baseRoom);
-            System.out.println("fume hood?");
-            lab = userInput.nextLine().toLowerCase();
             baseHood = checkHoodResponse(lab, this.baseHood);
-
             System.out.println("Great! You will set up your reaction in: "+ baseRoom.getName() + " " + baseHood.toString());
+            return baseRoom.getName() + " " + baseHood.toString();
     }
 
     ArrayList<String> startRxn() {
+        //ArrayList<String> reaction = new ArrayList<>();
+        
         while (true) {
             System.out.println("What reaction would you like to run? Options: Grignard, Sonogashira, Diels-Alder. ");
             String rxn = userInput.nextLine().toLowerCase();
             if (rxn.contains("grignard")) {
-                System.out.println("You will need: X, X, X, X");
-                return grignard;
+                for (int i = 0; i < grignard.size(); i++) {
+                    reaction.add(grignard.get(i));
+                    copyR.add(grignard.get(i)); 
+                }
+                return reaction;
             }
             if (rxn.contains("sonogashira")) {
-                System.out.println("You will need: X, X, X, X");
-                return sonogashira;
+                for (int i = 0; i < sonogashira.size(); i++) {
+                    reaction.add(sonogashira.get(i));
+                    copyR.add(sonogashira.get(i)); 
+                }
+                return reaction;
             }
             if (rxn.contains("diels")) {
-                System.out.println("You will need: X, X, X, X");
-                return dielsAlder;
+                for (int i = 0; i < dielsAlder.size(); i++) {
+                    reaction.add(dielsAlder.get(i));
+                    copyR.add(dielsAlder.get(i)); 
+                }
+                return reaction;
             } else {
                 System.out.println("Sorry, that was not an option. Please enter a new response!");
                 continue;
@@ -142,33 +248,135 @@ public class GameLoop {
     }
 
     void instructions() {
-        System.out.println("insutrctions");
+        System.out.println("The goal of this game is to run a reaction. In order to start the reaction, you must first run around to the research labs, gathering reagents and equipment.");
+        System.out.println("Each lab has four hoods, which you can accessing by inputting 'go' and the number of the hood you would like to go to. Similarly, adjacent labs can be accessed with 'go' and the name of the lab.");
+        System.out.println();
+        System.out.println("ACCEPTED COMMANDS: go, grab, drop, exit, help. Good luck!");
     }
-
+    void instructionsRxn() {
+        System.out.println("Let's start your reaction! First set up your equipment, then measure and add your reagents. Finally, start the timer. Your reaction will run for TEN SECONDS, so be prepared to stop the reaction at the ten second mark."); 
+        System.out.println("NEW ACCEPTED COMMANDS: set up, measure, add, start timer, stop reaction, exit, help.");
+        //System.out.println("rxn instructions");
+    }
+    void runRxn(Chemistt chemist, Boolean stillPlaying) {
+        ArrayList<String> empty = new ArrayList<>();
+        instructionsRxn();
+        while (stillPlaying) {
+            System.out.println(copyR.toString());
+            System.out.println(empty.toString());
+            //System.out.println(grignard.toString());
+            //instructionsRxn();
+            responseOne = userInput.nextLine();
+            if (responseOne.contains("set up")) {
+                if (responseOne.contains("round bottom flask") || responseOne.contains("oil bath") || responseOne.contains("heating mantle")||responseOne.contains("reflux condensor") || responseOne.contains("stir plate") || responseOne.contains("nitrogen tubing")) {
+                    String item = returnItem(responseOne);
+                    empty.add(item);
+                    //not working 
+                } else {
+                    System.out.println("That item does not need to be set up. Try measuring it.");
+                }
+            }
+            if (responseOne.contains("measure")) {
+                int x = 0;
+                for (int i = 0; i < measurables.size(); i++) {
+                    if (responseOne.contains(measurables.get(i))) {
+                        if (empty.contains("syringe")) {
+                            canAdd.add(measurables.get(i));
+                            x++;
+                            continue;
+                        } else {
+                            System.out.println("What would you like to measure this item with? ");
+                            responseOne = userInput.nextLine();
+                            if (responseOne.contains("syringe")) {
+                                empty.add("syringe");
+                                canAdd.add(measurables.get(i));
+                                x++;
+                            } else {
+                                System.out.println("Response not accepted. Item was not measured. ");
+                            }
+                        }
+                    }
+                }
+                if (x == 0) {
+                    System.out.println("That item cannot be measured.");
+                }
+                //not working 
+            }
+            if (responseOne.contains("add")) {
+                if (empty.contains("round bottom flask")) {
+                    int b = 0;
+                    for (int i = 0; i < measurables.size(); i++) {
+                        //logic error, adds everything in canAdd even if it is not the desired object
+                        if (canAdd.contains(measurables.get(i)) && !empty.contains(measurables.get(i)) && responseOne.contains(measurables.get(i))) {
+                            empty.add(measurables.get(i));
+                            b++;
+                        } 
+                    }
+                    if (b == 0) {
+                        System.out.println("Item needs to be measured first, has already been added to the reaction or is not an accepted item.");
+                    }
+                } else {
+                    System.out.println("Must set up round bottom flask first.");
+                }
+            }
+            // prevent the user from starting timer before everything is added
+            if (responseOne.contains("start time")) {
+                if (copyR.containsAll(empty) && empty.containsAll(copyR)) {
+                    start();
+                    if (result) {
+                        System.out.println("YAYYY your reaction worked, great job!");
+                        stillPlaying = false;
+                    } else {
+                        System.out.println("Your reaction FAILED >:( better luck next time!");
+                        stillPlaying = false;
+                    }
+                } else {
+                    System.out.println("Reaction is not ready to be started. Finish adding all reagents and equipment.");
+                }
+            }
+            if (responseOne.contains("exit")) {
+                stillPlaying = false;
+            }
+            if (responseOne.contains("help")) {
+                instructionsRxn();
+            }
+        }
+    }
     public static void main(String[] args) {
         GameLoop gameLoop = new GameLoop();
-        System.out.println(" instrunctions ");
+        gameLoop.instructions();
+
         gameLoop.setUp();
         boolean stillPlaying = true;
         Scanner userInput = new Scanner(System.in);
-        //gameLoop.currentLocation = gameLoop.startLocation();
-        //gameLoop.reaction = gameLoop.startRxn();
-        gameLoop.currentLocation = "shea 1";
-        gameLoop.reaction = gameLoop.grignard;
+        gameLoop.currentLocation = gameLoop.startLocation();
+        gameLoop.reaction = gameLoop.startRxn();
+        //gameLoop.currentLocation = "shea 1";
+        //gameLoop.reaction = gameLoop.grignard;
         Chemistt chemist = new Chemistt(gameLoop.reaction, gameLoop.baseHood, gameLoop.baseRoom, gameLoop.shea, gameLoop.gorin, gameLoop.buck, gameLoop.strom, gameLoop.queeney, gameLoop.teaching, gameLoop.hallway, gameLoop.hoods);
-    
+        gameLoop.location = chemist.baseRoom.getName() + " " + chemist.baseHood.toString();
+        gameLoop.baseLoc = chemist.baseRoom.getName() + " " + chemist.baseHood.toString();
+        //System.out.println(gameLoop.hoods.get("shea 1") == gameLoop.hoods.get("shea 2")); // Should be false
+        //System.out.println(gameLoop.hoods.get("shea 3") == gameLoop.hoods.get("queeney 1")); // Should be false
+        
+        for (int i = gameLoop.hoods.get(gameLoop.baseLoc).size()-1; i >=0; i--) {
+            gameLoop.hoods.get(gameLoop.baseLoc).remove(i);
+        }
+        
         do {
-            // ADD TO STATEMENT AND SAY WHAT LABS YOU CONNECT TO 
-            // having issues getting connecting labs 
-            String location = chemist.currentRoom.getName() + " " + chemist.currentHood.toString();
-            System.out.print("You need to gather: " + chemist.reaction.toString() + ". You are located at " + chemist.currentRoom.getName() +" lab, at fume hood " + chemist.currentHood.toString()+ ". The inventory at this location is: " + chemist.hoods.get(location));
-            System.out.print(". This lab connects to the " + chemist.currentRoom.connects());
-            if (chemist.currentRoom != gameLoop.hallway) {
-                System.out.println(" This lab contains 4 hoods.");
+            gameLoop.location = chemist.currentRoom.getName() + " " + chemist.currentHood.toString();
+            System.out.println("You need to gather: " + chemist.copyRxn.toString());
+            System.out.println();
+            System.out.println("You are carrying: " + chemist.carrying.toString());
+            System.out.println();
+            System.out.println("You are located at: " + gameLoop.location + ". The inventory at this hood is: "+ chemist.hoods.get(gameLoop.location));
+            System.out.println();
+            System.out.println("This lab connects to the " + chemist.currentRoom.connects());
+            if (gameLoop.location.equals(gameLoop.baseLoc) && !chemist.carrying.isEmpty()) {
+                chemist.addtoHood();
             }
             gameLoop.responseOne = userInput.nextLine().toLowerCase();
             if (gameLoop.responseOne.contains("grab")) {
-                // error picking up, doesn't recognize some items and for some items will make you ask twice
                 if (gameLoop.checkItem(gameLoop.responseOne)) {
                     String item = gameLoop.returnItem(gameLoop.responseOne);
                     chemist.pickUp(item);
@@ -181,8 +389,7 @@ public class GameLoop {
                 Integer nHood = gameLoop.checkHoodResponse(gameLoop.responseOne, chemist.currentHood);
                 chemist.move(nLab, nHood);
             }
-            if (gameLoop.responseOne.contains("drop") || chemist.yesNo(gameLoop.responseOne)) {
-                // error dropping, maybe with loop? out of bounds
+            if (gameLoop.responseOne.contains("drop")) {
                 if (gameLoop.checkItem(gameLoop.responseOne)) {
                     String item = gameLoop.returnItem(gameLoop.responseOne);
                     if (!chemist.drop(chemist.carrying, item)) {
@@ -206,7 +413,14 @@ public class GameLoop {
         } while (stillPlaying);
 
         if (!gameLoop.responseOne.equals("exit")) {
-            System.out.println("Yay, you won!");
+            System.out.println("Yay, your reaction is ready to be run! Would you like to proceed to the next level and start your reaction? Yes/No: ");
+            gameLoop.responseOne = userInput.nextLine();
+            if (chemist.yesNo(gameLoop.responseOne)) {
+                stillPlaying = true;
+                gameLoop.runRxn(chemist, stillPlaying);
+            } else {
+                System.out.println("Goodbye!");
+            }    
         } else { 
             System.out.println("Better luck next time.");
         }

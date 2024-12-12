@@ -20,6 +20,8 @@ public class Chemistt {
     Room currentRoom;
     Room baseRoom;
     String baseLocation;
+    ArrayList<String> copyRxn;
+    int placehold;
 
 
     public Chemistt (ArrayList<String> reaction, Integer baseHood, Room baseRoom, 
@@ -27,6 +29,7 @@ public class Chemistt {
     Room teaching, Room hallway, Hashtable<String, ArrayList<String>> hoods) {
         this.baseHood = baseHood;
         this.reaction = reaction;
+        this.copyRxn = reaction;
         this.currentHood = baseHood;
         this.baseHood = baseHood;
         this.baseRoom = baseRoom;
@@ -40,44 +43,40 @@ public class Chemistt {
         this.hallway = hallway;
         this.teaching = teaching;
         this.baseLocation = this.baseRoom.getName() + " " + this.baseHood.toString();
+        //hoods.get(this.baseLocation).clear();
     }
 
     public boolean addtoHood() {
-        String location = this.currentRoom.getName() + " " + this.currentHood.toString();
-        if (location == this.baseLocation) {
-            System.out.println("Would you like to add the items you are carrying to your hood inventory? ");
-            String response = scanner.nextLine().toLowerCase();
-            if (yesNo(response)) {
-                for (int k = 0; k < carrying.size(); k++){
-                    for (int h = 0; h < this.reaction.size(); h++) {
-                        if (this.reaction.get(h).equals(carrying.get(k))) {
-                            this.reaction.remove(h);
-                            if(this.reaction.isEmpty()){
-                                return false;
-                            }
+        System.out.println("Would you like to add the items you are carrying to your hood inventory? ");
+        String response = scanner.nextLine().toLowerCase();
+        //String add;
+        if (yesNo(response)) {
+            for (int k = 0; k < carrying.size(); k++){
+                for (int h = 0; h < this.reaction.size(); h++) {
+                    if (this.reaction.get(h).equals(carrying.get(k))) {
+                        this.reaction.remove(h);
+                        if(this.reaction.isEmpty()){
+                            return false;
                         }
-                        carrying.remove(h);
                     }
-                    hoods.get(location).add(carrying.get(k));
-                    carrying.remove(k);
-                }
+                } 
             }
+            for (int k = 0; k <carrying.size();k++) {
+                hoods.get(baseLocation).add(carrying.get(k)); 
+            }
+            carrying.clear();
         } 
         return true;
     }
     
     public void addtoCarrying(ArrayList<String> carrying, String item, String currentLocation) {
-        if (carrying.size() > 4) {
+        if (carrying.size() >= 4) {
             System.out.println("You cannot carry anything else! Drop an item, or return to your base hood and put your items down. ");
-            String response = scanner.nextLine().toLowerCase();
-            if (response.contains("drop")) {
-                if(!drop(carrying, response)) {
-                   System.out.println("Cannot drop that item.");
-                }
-            } 
         } else {
             carrying.add(item);
             hoods.get(currentLocation).remove(item);
+            this.copyRxn.remove(item);
+            System.out.println(item + " added to carrying.");
         }
     }
     
@@ -88,6 +87,7 @@ public class Chemistt {
                 hoods.get(currentLocation).add(item);
                 System.out.println(hoods.get(currentLocation).toString());
                 carrying.remove(item);
+                reaction.remove(item);
                 System.out.println(carrying);
                 return true;
             }
@@ -119,24 +119,22 @@ public class Chemistt {
         if (this.currentRoom != nLab) {
             System.out.println("Move unsuccessful. Not a connecting lab.");
         }
-        addtoHood();
+        //addtoHood();
     }
 
 
     public void pickUp(String item){
         String hoodIdentifier = currentRoom.getName() + " " + currentHood.toString();
-        String error = "error";
+        String error = item;
         for (int l = 0; l < hoods.get(hoodIdentifier).size(); l++) {
             if (item.equals(hoods.get(hoodIdentifier).get(l))) {
-                error = item;
+                error = "xxx";
                 addtoCarrying(this.carrying, hoods.get(hoodIdentifier).get(l), hoodIdentifier);
             }
         }
-        if (item.equals(error)||item.equals("error")) {
+        if (item.equals(error)) {
             System.out.println("This item is not in the inventory.");
-        } else {
-            System.out.println(item + " added to carrying.");
-        }
+        } 
     }
 
     public boolean yesNo(String response) {
@@ -149,6 +147,7 @@ public class Chemistt {
                 return false;
             } else {
                 System.out.println("Response not accepted. Please try again (Yes or No): ");
+                response = scanner.nextLine();
                 continue;
             }
         }
