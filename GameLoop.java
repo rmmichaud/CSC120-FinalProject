@@ -4,12 +4,14 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.TimerTask;
 import java.util.Timer;
+/**
+ * The game loop is responsible for running the game. It sets up a new instance of chemist, as well as all of the rooms and the hood inventories.
+ * The game loop also has all of the code for the second level of the game, which did not really require its own class.
+ */
 
 public class GameLoop {
     Random rand = new Random();
     Scanner userInput = new Scanner(System.in);
-    //String hoodStation;
-    //String name;
     ArrayList<String> canAdd = new ArrayList<>();
     String location;
     String item;
@@ -19,8 +21,6 @@ public class GameLoop {
     String responseOne;
     ArrayList<String> carrying = new ArrayList<>();
     String[] runR;
-    //ArrayList<String> copyR;
-    //Chemistt chemist;
     String[] inventory = {
         "graduated cyclinder", "beaker", "round bottom flask", "syringe", "magnesium powder",
         "diethyl ether", "bromobenzene", "stirring rod", "benzophenone", "hydrochloric acid", "erlenmeyer flask",
@@ -106,6 +106,11 @@ public class GameLoop {
             
         return randInventory;
     }
+
+    /**
+     * creates a new random inventory each time it is called, adding items from the set inventory. 
+     * @return randInventory
+     */
      
    ArrayList<String> randInventory() {
         ArrayList<String> randInventory = new ArrayList<>(); 
@@ -119,7 +124,11 @@ public class GameLoop {
         
     }
     
-
+    /**
+     * sets up the reaction arrays, the room connections, and the hood inventories 
+     * sets the default base hood as shea 1
+     * sets up the "measurables" array which includes all reaction chemicals that need to be measured before being added to a reaction
+     */
     void setUp () {
         grignard.add("round bottom flask");
         grignard.add("magnesium powder");
@@ -205,6 +214,10 @@ public class GameLoop {
         baseHood = 1;
     }
 
+    /**
+     * prompts the user to choose a base hood and base array
+     * @return base room plus base hood, which acts as a specific location identifier
+     */
     String startLocation() {
             System.out.println("Choose a lab and hood to set up your reaction. Lab options: Shea, Gorin, Buck, Strom, Queeney. Hood options: 1, 2, 3, 4.[Default: Shea 1]");
             String lab = userInput.nextLine().toLowerCase();
@@ -214,9 +227,12 @@ public class GameLoop {
             return baseRoom.getName() + " " + baseHood.toString();
     }
 
+    /**
+     * prompts user to choose reaction. unlike for the hoods, there is no default reaction, so the user has to continue until they have 
+     * chosen an acceptable reaction
+     * @return reaction
+     */
     ArrayList<String> startRxn() {
-        //ArrayList<String> reaction = new ArrayList<>();
-        
         while (true) {
             System.out.println("What reaction would you like to run? Options: Grignard, Sonogashira, Diels-Alder. ");
             String rxn = userInput.nextLine().toLowerCase();
@@ -246,36 +262,44 @@ public class GameLoop {
             }
         }
     }
-
+    /**
+     * prints out instructions for the first level of the game
+     */
     void instructions() {
         System.out.println("The goal of this game is to run a reaction. In order to start the reaction, you must first run around to the research labs, gathering reagents and equipment.");
         System.out.println("Each lab has four hoods, which you can accessing by inputting 'go' and the number of the hood you would like to go to. Similarly, adjacent labs can be accessed with 'go' and the name of the lab.");
         System.out.println();
         System.out.println("ACCEPTED COMMANDS: go, grab, drop, exit, help. Good luck!");
     }
+    /**
+     * prints out instructions for the second level of the game
+     */
     void instructionsRxn() {
         System.out.println("Let's start your reaction! First set up your equipment, then measure and add your reagents. Finally, start the timer. Your reaction will run for TEN SECONDS, so be prepared to stop the reaction at the ten second mark."); 
         System.out.println("NEW ACCEPTED COMMANDS: set up, measure, add, start timer, stop reaction, exit, help.");
-        //System.out.println("rxn instructions");
     }
+    /**
+     * game loop for second level of the game where the player sets up and runs the reaction by setting up the equipment, measuring the 
+     * reagents, and adding them. finally, the player can start the timer for the reaction (the timer isn't really working right now )
+     * @param chemist
+     * @param stillPlaying
+     */
     void runRxn(Chemistt chemist, Boolean stillPlaying) {
         ArrayList<String> empty = new ArrayList<>();
         instructionsRxn();
         while (stillPlaying) {
             System.out.println(copyR.toString());
             System.out.println(empty.toString());
-            //System.out.println(grignard.toString());
-            //instructionsRxn();
             responseOne = userInput.nextLine();
             if (responseOne.contains("set up")) {
                 if (responseOne.contains("round bottom flask") || responseOne.contains("oil bath") || responseOne.contains("heating mantle")||responseOne.contains("reflux condensor") || responseOne.contains("stir plate") || responseOne.contains("nitrogen tubing")) {
                     String item = returnItem(responseOne);
                     empty.add(item);
-                    //not working 
                 } else {
                     System.out.println("That item does not need to be set up. Try measuring it.");
                 }
             }
+            //checks to make sure an item needs to be measured 
             if (responseOne.contains("measure")) {
                 int x = 0;
                 for (int i = 0; i < measurables.size(); i++) {
@@ -285,6 +309,7 @@ public class GameLoop {
                             x++;
                             continue;
                         } else {
+                            // if no items have been measured, it checks what you want to measure with (since syringe is used for all reactions)
                             System.out.println("What would you like to measure this item with? ");
                             responseOne = userInput.nextLine();
                             if (responseOne.contains("syringe")) {
@@ -300,13 +325,12 @@ public class GameLoop {
                 if (x == 0) {
                     System.out.println("That item cannot be measured.");
                 }
-                //not working 
             }
+            // checks if the user has set up the reaction flask and measured the chemical before adding to the reaction array
             if (responseOne.contains("add")) {
                 if (empty.contains("round bottom flask")) {
                     int b = 0;
                     for (int i = 0; i < measurables.size(); i++) {
-                        //logic error, adds everything in canAdd even if it is not the desired object
                         if (canAdd.contains(measurables.get(i)) && !empty.contains(measurables.get(i)) && responseOne.contains(measurables.get(i))) {
                             empty.add(measurables.get(i));
                             b++;
@@ -319,7 +343,7 @@ public class GameLoop {
                     System.out.println("Must set up round bottom flask first.");
                 }
             }
-            // prevent the user from starting timer before everything is added
+            // prevent the user from starting timer before everything is added (new array contains everything from copy of reaction array)
             if (responseOne.contains("start time")) {
                 if (copyR.containsAll(empty) && empty.containsAll(copyR)) {
                     start();
@@ -342,27 +366,28 @@ public class GameLoop {
             }
         }
     }
+    /**
+     * main method for the first level of the game
+     * sets up current location, new instance of chemistt
+     * checks user response each round and calls corresponding methods 
+     * @param args
+     */
     public static void main(String[] args) {
         GameLoop gameLoop = new GameLoop();
         gameLoop.instructions();
-
         gameLoop.setUp();
         boolean stillPlaying = true;
         Scanner userInput = new Scanner(System.in);
         gameLoop.currentLocation = gameLoop.startLocation();
         gameLoop.reaction = gameLoop.startRxn();
-        //gameLoop.currentLocation = "shea 1";
-        //gameLoop.reaction = gameLoop.grignard;
         Chemistt chemist = new Chemistt(gameLoop.reaction, gameLoop.baseHood, gameLoop.baseRoom, gameLoop.shea, gameLoop.gorin, gameLoop.buck, gameLoop.strom, gameLoop.queeney, gameLoop.teaching, gameLoop.hallway, gameLoop.hoods);
         gameLoop.location = chemist.baseRoom.getName() + " " + chemist.baseHood.toString();
         gameLoop.baseLoc = chemist.baseRoom.getName() + " " + chemist.baseHood.toString();
-        //System.out.println(gameLoop.hoods.get("shea 1") == gameLoop.hoods.get("shea 2")); // Should be false
-        //System.out.println(gameLoop.hoods.get("shea 3") == gameLoop.hoods.get("queeney 1")); // Should be false
-        
+        // empties the inventory of the hood that the player is starting their reaction in
         for (int i = gameLoop.hoods.get(gameLoop.baseLoc).size()-1; i >=0; i--) {
             gameLoop.hoods.get(gameLoop.baseLoc).remove(i);
         }
-        
+        // game loop
         do {
             gameLoop.location = chemist.currentRoom.getName() + " " + chemist.currentHood.toString();
             System.out.println("You need to gather: " + chemist.copyRxn.toString());
@@ -411,7 +436,7 @@ public class GameLoop {
                 stillPlaying = false;
             }
         } while (stillPlaying);
-
+        // allows player to choose whether they would like to continue on in the game
         if (!gameLoop.responseOne.equals("exit")) {
             System.out.println("Yay, your reaction is ready to be run! Would you like to proceed to the next level and start your reaction? Yes/No: ");
             gameLoop.responseOne = userInput.nextLine();
@@ -426,7 +451,13 @@ public class GameLoop {
         }
         userInput.close();
     }
-
+    /**
+     * checks the user input for what lab they want to go to, returns the object Room corresponding to the name
+     * returns currentRoom if the user does not input any accepted labs
+     * @param lab
+     * @param currentRoom
+     * @return currentRoom
+     */
     public Room checkLab(String lab, Room currentRoom) {
         lab = lab.toLowerCase();
         if (lab.contains("shea")) {
@@ -453,8 +484,12 @@ public class GameLoop {
         return currentRoom;
     }
 
+    /**
+     * checks inventory to see if the item the player wants is in the inventory 
+     * @param response
+     * @return boolean
+     */
     boolean checkItem(String response) {
-        // issue bc some items are multi word
         String[] responseSplit = response.split(" ");
         for (int i = 0; i < responseSplit.length; i++) {
             for (int o = 0; o < inventory.length; o++)
@@ -470,9 +505,13 @@ public class GameLoop {
         }
         return false;
     }
-
+    /**
+     * returns the (String) item in the inventory that the user wants 
+     * returns error (this code should be unreachable because if the item is not in the inventory the user would have found out from the result of checkItem(response))
+     * @param response
+     * @return item
+     */
     public String returnItem(String response) {
-        // issue bc some items are multi word
         String[] responseSplit = response.split(" ");
         for (int i = 0; i < responseSplit.length; i++) {
             for (int o = 0; o < inventory.length; o++)
@@ -488,7 +527,13 @@ public class GameLoop {
         }
         return "error";
     }
-
+    /**
+     * takes the user input and returns the Integer corresponding with the hood they want to go to, returns currentHood if there is not an 
+     * acceptable number in the string
+     * @param hood
+     * @param currentHood
+     * @return Integer
+     */
     public Integer checkHoodResponse(String hood, Integer currentHood) {
         hood = hood.toLowerCase();
         if (hood.contains("1") || hood.contains("one")) {

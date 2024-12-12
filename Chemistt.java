@@ -1,8 +1,10 @@
 import java.util.*;
+/**
+ * creates all methods corresponding to the user moving between labs, adding items to carrying, etc. 
+ */
 public class Chemistt {
     String chemist;
     ArrayList<String> reaction;
-    //ArrayList<String> hoodInventory;
     Integer baseHood;
     Random rand = new Random();
     Scanner scanner = new Scanner(System.in);
@@ -23,7 +25,21 @@ public class Chemistt {
     ArrayList<String> copyRxn;
     int placehold;
 
-
+    /**
+     * constructor - takes a lot of parameters because it creates the map within this class as well so it can check where the user 
+     * can move. not sure if there was a better way to do this but probably 
+     * @param reaction
+     * @param baseHood
+     * @param baseRoom
+     * @param shea
+     * @param gorin
+     * @param buck
+     * @param strom
+     * @param queeney
+     * @param teaching
+     * @param hallway
+     * @param hoods
+     */
     public Chemistt (ArrayList<String> reaction, Integer baseHood, Room baseRoom, 
     Room shea, Room gorin, Room buck, Room strom, Room queeney, 
     Room teaching, Room hallway, Hashtable<String, ArrayList<String>> hoods) {
@@ -43,13 +59,16 @@ public class Chemistt {
         this.hallway = hallway;
         this.teaching = teaching;
         this.baseLocation = this.baseRoom.getName() + " " + this.baseHood.toString();
-        //hoods.get(this.baseLocation).clear();
     }
 
+    /**
+     * adds item to the user's base hood, removes them from the reaction array if they are reaction items, breaks if the reaction array is empty 
+     * empties the carrying array
+     * @return boolean
+     */
     public boolean addtoHood() {
         System.out.println("Would you like to add the items you are carrying to your hood inventory? ");
         String response = scanner.nextLine().toLowerCase();
-        //String add;
         if (yesNo(response)) {
             for (int k = 0; k < carrying.size(); k++){
                 for (int h = 0; h < this.reaction.size(); h++) {
@@ -66,9 +85,17 @@ public class Chemistt {
             }
             carrying.clear();
         } 
+        System.out.println("Successful drop.");
         return true;
     }
     
+    /**
+     * checks if the user is carrying too many items 
+     * if not, allows the user to add items to their carrying and removes those items from the current location
+     * @param carrying
+     * @param item
+     * @param currentLocation
+     */
     public void addtoCarrying(ArrayList<String> carrying, String item, String currentLocation) {
         if (carrying.size() >= 4) {
             System.out.println("You cannot carry anything else! Drop an item, or return to your base hood and put your items down. ");
@@ -80,6 +107,12 @@ public class Chemistt {
         }
     }
     
+    /**
+     * removes item from the user's carrying inventory and adds it to the inventory of the current location
+     * @param carrying
+     * @param item
+     * @return boolean if the drop was successful
+     */
     public boolean drop(ArrayList<String> carrying, String item) {   
         for (int o = 0; 0 < carrying.size(); o++) {
             if (item.equals(carrying.get(o))) {
@@ -87,16 +120,16 @@ public class Chemistt {
                 hoods.get(currentLocation).add(item);
                 System.out.println(hoods.get(currentLocation).toString());
                 carrying.remove(item);
-                reaction.remove(item);
                 System.out.println(carrying);
                 return true;
             }
-        }
-            
+        } 
         return false;
     } 
-
-
+    /**
+     * checks if the reaction array is empty, returns true if so
+     * @return boolean
+     */
     public boolean checkHood() {
         if (this.reaction.isEmpty()) {
             return true;
@@ -104,7 +137,12 @@ public class Chemistt {
             return false;
         }
     }
-
+    /**
+     * checks the user's location and the hood or lab they want to go to, if the lab is connecting then the user's location is changed 
+     * to that lab
+     * @param nLab
+     * @param nHood
+     */
     public void move (Room nLab, Integer nHood) {
         if (nLab != this.currentRoom) {
             for (int i = 0; i < nLab.connect.get(nLab).size(); i++){
@@ -119,10 +157,12 @@ public class Chemistt {
         if (this.currentRoom != nLab) {
             System.out.println("Move unsuccessful. Not a connecting lab.");
         }
-        //addtoHood();
     }
-
-
+    /**
+     * checks the current inventory for the item that the user wants to pick up 
+     * adds to carrying if the item is accepted
+     * @param item
+     */
     public void pickUp(String item){
         String hoodIdentifier = currentRoom.getName() + " " + currentHood.toString();
         String error = item;
@@ -136,7 +176,11 @@ public class Chemistt {
             System.out.println("This item is not in the inventory.");
         } 
     }
-
+    /**
+     * checks the user's response for yes/no questions 
+     * @param response
+     * @return
+     */
     public boolean yesNo(String response) {
         while (true) {
             response = response.toLowerCase();
@@ -151,9 +195,5 @@ public class Chemistt {
                 continue;
             }
         }
-    }
-
-    public static void main(String[] args) {
-        
     }
 }

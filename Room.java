@@ -1,6 +1,8 @@
 import java.util.*;
 
-//import javax.management.RuntimeErrorException;
+/**
+ * creates new instances of Room
+ */
 public class Room {
     public Hood sheaOne;
     protected String name;
@@ -8,46 +10,50 @@ public class Room {
     Hashtable<Room, ArrayList<Room>> connect = new Hashtable<>();
     ArrayList<Room> connecting = new ArrayList<Room>();
     Hood hood;
-    //ArrayList<String> labInventory;
-    //String lab;
-    //String hoodNumber;
-    //Hashtable<String, ArrayList<String>> hoods;
-
-    public Room (String name, ArrayList<String> inventory, Hashtable<Room, ArrayList<Room>> connect, Hood hood/**, Hashtable<String, ArrayList<String>> hoods*/) { 
-        this.name = name;
-        this.inventory = inventory;
-        //this.connect = connect;
-        this.hood = hood;
-        this.connect = connect != null ? connect : new Hashtable<>();
-    }
-
+    /**
+     * returns the string name corresponding with the hood (allowing it to be printed to give info to player)
+     * @return String
+     */
     String getName(){
         return this.name;
     }
-
-    String[] acceptedResponses = {
-        "shea","buck","strom","queeney","gorin","teaching","hallway","one", 
-        "two","three", "four", "grab", "drop", "add", "move", "go", "yes", "no", "help", "exit"
-    };
-    
-    Scanner scanner = new Scanner(System.in);
+    //Scanner scanner = new Scanner(System.in);
+    /**
+     * constructor 
+     * @param name
+     * @param inventory
+     */
     public Room (String name, ArrayList<String> inventory) {
         this.name = name;
         this.inventory = inventory;
     }
-    //Hashtable<String, ArrayList<String>> connect, String room, ArrayList<String> connecting
+    /**
+     * connects rooms to each other 
+     * @param base
+     * @param b
+     */
     public void connected(Room base, Room b) {
         ArrayList<Room> connecting = new ArrayList<>();
         connecting.add(b);
         this.connect.put(base, connecting);
     }
+    /**
+     * connects rooms to each other
+     * overloaded to allow two room connections 
+     * @param base
+     * @param b
+     * @param c
+     */
     public void connected(Room base, Room b, Room c) {
         ArrayList<Room> connecting = new ArrayList<>();
         connecting.add(b);
         connecting.add(c);
         this.connect.put(base, connecting);
     }
-
+    /**
+     * prints out the rooms connected to the room that this method is called to
+     * @return String
+     */
     public String connects() {
         if (name.contains("shea")) {
             return "Buck Lab and the Gorin Lab.";
@@ -72,12 +78,5 @@ public class Room {
         }
         return "Error";
     }
-
-    public void instructions() {
-        System.out.println("INSTRUCTIONS HERE");
-    }
-
-
-
 }
 
