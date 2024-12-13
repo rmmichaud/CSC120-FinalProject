@@ -98,7 +98,10 @@ public class Chemistt {
      */
     public void addtoCarrying(ArrayList<String> carrying, String item, String currentLocation) {
         if (carrying.size() >= 4) {
+            System.out.println("**************************************************************************************************");
             System.out.println("You cannot carry anything else! Drop an item, or return to your base hood and put your items down. ");
+            System.out.println("**************************************************************************************************");
+            System.out.println();
         } else {
             carrying.add(item);
             hoods.get(currentLocation).remove(item);
@@ -153,9 +156,13 @@ public class Chemistt {
         }
         if (nHood != this.currentHood) {
             this.currentHood = nHood;
+        } else {
+            System.out.println("You are already located in that hood.");
         }
         if (this.currentRoom != nLab) {
+            System.out.println("****************************************");
             System.out.println("Move unsuccessful. Not a connecting lab.");
+            System.out.println("****************************************");
         }
     }
     /**

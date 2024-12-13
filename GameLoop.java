@@ -22,14 +22,14 @@ public class GameLoop {
     ArrayList<String> carrying = new ArrayList<>();
     String[] runR;
     String[] inventory = {
-        "graduated cyclinder", "beaker", "round bottom flask", "syringe", "magnesium powder",
-        "diethyl ether", "bromobenzene", "stirring rod", "benzophenone", "hydrochloric acid", "erlenmeyer flask",
-        "pipettes", "heating mantle", "oil bath", "separatory funnel", "balance", "stir bar", "reflux condenser", 
+        "graduated cyclinder",  "round bottom flask",  "magnesium powder",
+        "diethyl ether", "bromobenzene", "stirring rod", "palladium(iii) acetate", "beaker", "erlenmeyer flask",
+        "pipettes",  "oil bath", "hydrochloric acid", "separatory funnel", "aluminum chloride", "balance", "stir bar", "reflux condenser", 
         "triethylamine", "toluene", "sodium sulfite", "sulfuric acid", "methanol", "hexane", "ethyl acetate", "ammonium hydroxide", 
-        "acetone", "iodobenzene", "phenylacetylene", "palladium(iii) acetate", "copper(i) iodide", "stir plate", 
-        "cyclopentadiene", "maleic anhydride", "aluminum chloride", "magnesium sulfate", "calcium chloride", "pyridine", "isopropanol", 
-        "cyclohexanone", "phenanthrene", "cyclohexane", "benzyl alcohol", "volumetric flasks", "graduated cylinders", "watch glasses",
-        "thermometer", "sand bath", "buchner funnel", "filter paper", "nitrogen tubing"
+        "acetone", "iodobenzene", "benzophenone","cyclohexane","stir plate", 
+        "cyclopentadiene", "heating mantle","maleic anhydride", "phenylacetylene", "magnesium sulfate", "syringe","calcium chloride", "pyridine", "isopropanol", 
+        "cyclohexanone", "phenanthrene",  "benzyl alcohol", "volumetric flasks", "copper(i) iodide", "graduated cylinders", "watch glasses",
+        "thermometer", "sand bath", "nitrogen tubing", "filter paper", "buchner funnel"
       };
     ArrayList<String> measurables = new ArrayList<>();
     ArrayList<String> reaction = new ArrayList<>();
@@ -61,8 +61,6 @@ public class GameLoop {
                     System.out.println(counter + " seconds remaining...");
                     counter--;
                 } else {
-                    System.out.println("Time's up!");
-                    counter --;
                     timer.cancel();
                     checkResult();
                 }
@@ -71,50 +69,61 @@ public class GameLoop {
 
         // Schedule the timer
         timer.scheduleAtFixedRate(task, 0, 1000);
+    }
 
-        // Thread for handling input
-        new Thread(() -> {
-            while (counter >= 0) {
-                if (userInput.hasNextLine() && counter == 0) {
-                    response = userInput.nextLine();
-                }
-                if (response.contains("stop reaction")) {
-                    result = false;
+    public void startWrongRxn() {
+        // Thread for handling timer
+        TimerTask task = new TimerTask() {
+            public void run() {
+                if (counter > 0) {
+                    System.out.println(counter + " seconds remaining...");
+                    counter--;
+                } else {
+                    System.out.println("Your reaction FAILED >:( you did not have all of the chemicals and equipment needed!)");
                     timer.cancel();
-                    System.out.println("Reaction stopped!");
-                    break;
                 }
             }
-        }).start();
-    }
+        };
 
-    public void checkResult() {
-        if (response.contains("1")) {
-            result = true;
-            System.out.println("Success: Result is true.");
+        // Schedule the timer
+        timer.scheduleAtFixedRate(task, 0, 1000);
+    }      
+
+    boolean checkResult() {
+        int randomInt = rand.nextInt(5);
+        if (randomInt == 4) {
+            System.out.println("Your reaction failed >:( better luck next time!)");
+            return false;
         } else {
-            System.out.println("Failure: Result is false.");
+            System.out.println("YAY! Your reaction worked!!");
+            return true;
         }
-    }
-    
-
-    ArrayList<String> randInventory(Boolean b) {
-        ArrayList<String> randInventory = new ArrayList<>();
-        for (int i = 0; i<inventory.length; i++) {
-            randInventory.add(inventory[i]);
-        }
-            
-        return randInventory;
     }
 
     /**
      * creates a new random inventory each time it is called, adding items from the set inventory. 
      * @return randInventory
      */
-     
-   ArrayList<String> randInventory() {
+    
+    ArrayList<String> randInventory() {
         ArrayList<String> randInventory = new ArrayList<>(); 
-        int randomInt = rand.nextInt(12) + 1;
+        int randomInt = rand.nextInt(5) + 1;
+        while (randInventory.size() < randomInt) {
+            int rand_int = rand.nextInt(inventory.length);
+            String finalItem = inventory[rand_int];
+            randInventory.add(finalItem);
+        }
+        return randInventory;
+        
+    }
+
+   ArrayList<String> randInventory(int c, int p) {
+        ArrayList<String> randInventory = new ArrayList<>(); 
+        while (c < p && p < inventory.length && c < inventory.length) {
+            randInventory.add(inventory[c]);
+            c++;
+        }
+        int randomInt = rand.nextInt(5) + 1;
         while (randInventory.size() < randomInt) {
             int rand_int = rand.nextInt(inventory.length);
             String finalItem = inventory[rand_int];
@@ -186,30 +195,30 @@ public class GameLoop {
         teaching.connected(teaching, hallway, queeney);
         queeney.connected(queeney, hallway, strom);
         strom.connected(strom, queeney, buck);
-        hoods.put("shea 1", new ArrayList<>(randInventory()));
-        hoods.put("shea 2", new ArrayList<>(randInventory()));
-        hoods.put("shea 3", new ArrayList<>(randInventory()));
-        hoods.put("shea 4", new ArrayList<>(randInventory()));
-        hoods.put("gorin 1", new ArrayList<>(randInventory()));
-        hoods.put("gorin 2", new ArrayList<>(randInventory()));
-        hoods.put("gorin 3", new ArrayList<>(randInventory()));
-        hoods.put("gorin 4", new ArrayList<>(randInventory()));
-        hoods.put("strom 1", new ArrayList<>(randInventory()));
-        hoods.put("strom 2", new ArrayList<>(randInventory()));
-        hoods.put("strom 3", new ArrayList<>(randInventory()));
-        hoods.put("strom 4", new ArrayList<>(randInventory()));
-        hoods.put("queeney 1", new ArrayList<>(randInventory()));
-        hoods.put("queeney 2", new ArrayList<>(randInventory()));
-        hoods.put("queeney 3", new ArrayList<>(randInventory()));
-        hoods.put("queeney 4", new ArrayList<>(randInventory()));
-        hoods.put("buck 1", new ArrayList<>(randInventory()));
-        hoods.put("buck 2", new ArrayList<>(randInventory()));
-        hoods.put("buck 3", new ArrayList<>(randInventory()));
-        hoods.put("buck 4", new ArrayList<>(randInventory()));
-        hoods.put("teaching 1", new ArrayList<>(randInventory()));
-        hoods.put("teaching 2", new ArrayList<>(randInventory()));
-        hoods.put("teaching 3", new ArrayList<>(randInventory()));
-        hoods.put("teaching 4", new ArrayList<>(randInventory()));
+        hoods.put("shea 1", new ArrayList<>(randInventory(0, 2)));
+        hoods.put("shea 2", new ArrayList<>(randInventory(2, 3)));
+        hoods.put("shea 3", new ArrayList<>(randInventory(3, 4)));
+        hoods.put("shea 4", new ArrayList<>(randInventory(4, 6)));
+        hoods.put("gorin 1", new ArrayList<>(randInventory(6, 8)));
+        hoods.put("gorin 2", new ArrayList<>(randInventory(8, 10)));
+        hoods.put("gorin 3", new ArrayList<>(randInventory(10, 14)));
+        hoods.put("gorin 4", new ArrayList<>(randInventory(14, 15)));
+        hoods.put("strom 1", new ArrayList<>(randInventory(15, 16)));
+        hoods.put("strom 2", new ArrayList<>(randInventory(16, 18)));
+        hoods.put("strom 3", new ArrayList<>(randInventory(18, 20)));
+        hoods.put("strom 4", new ArrayList<>(randInventory(20, 22)));
+        hoods.put("queeney 1", new ArrayList<>(randInventory(22, 24)));
+        hoods.put("queeney 2", new ArrayList<>(randInventory(24, 26)));
+        hoods.put("queeney 3", new ArrayList<>(randInventory(26, 28)));
+        hoods.put("queeney 4", new ArrayList<>(randInventory(28, 31)));
+        hoods.put("buck 1", new ArrayList<>(randInventory(31, 33)));
+        hoods.put("buck 2", new ArrayList<>(randInventory(33, 35)));
+        hoods.put("buck 3", new ArrayList<>(randInventory(35, 38)));
+        hoods.put("buck 4", new ArrayList<>(randInventory(38, 43)));
+        hoods.put("teaching 1", new ArrayList<>(randInventory(43, 46)));
+        hoods.put("teaching 2", new ArrayList<>(randInventory(46, 48)));
+        hoods.put("teaching 3", new ArrayList<>(randInventory(48, 49)));
+        hoods.put("teaching 4", new ArrayList<>(randInventory(49, inventory.length)));
         baseRoom = shea;
         baseHood = 1;
     }
@@ -275,8 +284,8 @@ public class GameLoop {
      * prints out instructions for the second level of the game
      */
     void instructionsRxn() {
-        System.out.println("Let's start your reaction! First set up your equipment, then measure and add your reagents. Finally, start the timer. Your reaction will run for TEN SECONDS, so be prepared to stop the reaction at the ten second mark."); 
-        System.out.println("NEW ACCEPTED COMMANDS: set up, measure, add, start timer, stop reaction, exit, help.");
+        System.out.println("Let's start your reaction! First set up your equipment, then measure and add your reagents. Finally, start the timer. Only start the timer when you are sure you have measured and added everything you need! Your reaction will run for five seconcds, and then you will find out whether or not it worked!"); 
+        System.out.println("NEW ACCEPTED COMMANDS: set up, measure, add, start timer, exit, help.");
     }
     /**
      * game loop for second level of the game where the player sets up and runs the reaction by setting up the equipment, measuring the 
@@ -288,8 +297,8 @@ public class GameLoop {
         ArrayList<String> empty = new ArrayList<>();
         instructionsRxn();
         while (stillPlaying) {
-            System.out.println(copyR.toString());
-            System.out.println(empty.toString());
+            System.out.println("Components of the reaction: " + copyR.toString());
+            //System.out.println(empty.toString());
             responseOne = userInput.nextLine();
             if (responseOne.contains("set up")) {
                 if (responseOne.contains("round bottom flask") || responseOne.contains("oil bath") || responseOne.contains("heating mantle")||responseOne.contains("reflux condensor") || responseOne.contains("stir plate") || responseOne.contains("nitrogen tubing")) {
@@ -347,15 +356,10 @@ public class GameLoop {
             if (responseOne.contains("start time")) {
                 if (copyR.containsAll(empty) && empty.containsAll(copyR)) {
                     start();
-                    if (result) {
-                        System.out.println("YAYYY your reaction worked, great job!");
-                        stillPlaying = false;
-                    } else {
-                        System.out.println("Your reaction FAILED >:( better luck next time!");
-                        stillPlaying = false;
-                    }
+                    stillPlaying = false;
                 } else {
-                    System.out.println("Reaction is not ready to be started. Finish adding all reagents and equipment.");
+                    startWrongRxn();
+                    stillPlaying = false;
                 }
             }
             if (responseOne.contains("exit")) {
