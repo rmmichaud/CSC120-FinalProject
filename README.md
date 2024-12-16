@@ -18,11 +18,10 @@
  I tried to include a timer aspect that the user could input 'stop' when the reaction was over, but was having a lot of issues with it and decided to just make the ending a random result (because sometimes that is how reactions are in real life). 
 
  - Is there anything that you wish you had **implemented differently**?
-Each hood gets a new random inventory each time the game is played, but I don't have any measures ensuring that there is at least one of every necessary item present somewhere in the game. I think it's kind of funny because sometimes you just can't run the reactions because the hoods don't have what you need, and that's definitely reflective of the real life experience. My chemist friends thought that was funny, but it is definitely inconvenient when it happens too much. I increased the upper bound of the items allowed in each hood, but didn't add any checks. I debated over it a lot because I don't think non-chemists have that much fun playing the game anyway, but I decided that the point of the game is to emulate what running a reaction is really like. 
+You can move between labs no matter what hood you are at, and I think I maybe would have changed that to make the game more challenging and more mapped out.
 
-I think organization in general was an issue for me and I would've liked to organize my code better, but that is more on the back end and doesn't really affect how the game is played.
-
-The user doesn't really have an opportunity to add the wrong thing to their reaction and cause it to fail that way, so that would be fun to add as well. 
+I think organization in general was an issue for me and I would've liked to organize my code better, but that is more on the back end and doesn't really affect how the game is played. 
+ 
 
  - If you had **unlimited time**, what additional features would you implement?
  I want to include a feature for chemists where you are given the entire inventory and then you have to figure out a reaction based on what is available. These reactions I included are really common organic chemistry reactions so I think it would be fun to see if chemists could get it. 
