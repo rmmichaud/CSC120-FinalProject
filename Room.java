@@ -4,12 +4,12 @@ import java.util.*;
  * creates new instances of Room
  */
 public class Room {
-    public Hood sheaOne;
+    //public Hood sheaOne;
     protected String name;
     protected ArrayList<String> inventory;
     Hashtable<Room, ArrayList<Room>> connect = new Hashtable<>();
     ArrayList<Room> connecting = new ArrayList<Room>();
-    Hood hood;
+    //Hood hood;
     /**
      * returns the string name corresponding with the hood (allowing it to be printed to give info to player)
      * @return String
